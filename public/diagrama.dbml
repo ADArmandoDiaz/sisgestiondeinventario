@@ -1,0 +1,95 @@
+Table Sucursales {
+    id int [pk, increment]
+    nombre varchar(100) [not null]
+    direccion varchar(255)
+    telefono varchar(15)
+    email varchar(100)
+    activo boolean [default: true]
+}
+Table Categorias {
+    id int [pk, increment]
+    nombre varchar(100) [not null]
+    descripcion text
+
+
+}
+Table Productos {
+    id int [pk, increment]
+    // sucursal_id int [ref: > Sucursales.id]
+    categoria_id int [ref: > Categorias.id]
+
+    codigo varchar(50) [not null, unique]
+    nombre varchar(100) [not null]
+    description text
+    imagen_url varchar(255)
+    precio_compra decimal(10, 2) [not null]
+    precio_venta decimal(10, 2) [not null]
+    stock_minimo int [ default: 0]
+    stock_maximo int [ default: 0]
+    unidad_medida varchar(50) [not null] //
+    estado boolean [default: true]
+}
+Table Proveedores {
+    id int [pk, increment]
+    nombre_empresa varchar(100)
+    contacto_nombre varchar(100)
+    contacto_telefono varchar(15)
+    contacto_email varchar(100)
+    direccion varchar(255)
+    activo boolean [default: true]
+}
+Table Lotes {
+    id int [pk, increment]
+    producto_id int [ref: > Productos.id]
+    proveedor_id int [ref: > Proveedores.id]
+
+    codigo_lote varchar(50) [not null]
+    fecha_ingreso date
+    fecha_vencimiento date
+    cantidad_inicial int [not null]
+    cantidad_actual int [not null]
+    precio_compra decimal(10, 2) [not null]
+    precio_venta decimal(10, 2) [not null]
+    estado boolean [default: true]
+}
+Table Inventario_Sucursal_lotes {
+    id int [pk, increment]
+    sucursal_id int [ref: > Sucursales.id]
+    lote_id int [ref: > Lotes.id]
+
+    cantidad_en_sucursal int [not null]
+    fecha_ultima_actualizacion timestamp [default: `CURRENT_TIMESTAMP`]
+}
+
+Table Movimientos_Inventario {
+    id int [pk, increment]
+    producto_id int [ref: > Productos.id]
+    lote_id int [ref: > Lotes.id]
+    sucursal_id int [ref: > Sucursales.id]
+
+    tipo_movimiento varchar(50) [not null] // 'entrada' o 'salida'
+    cantidad int [not null]
+    fecha_movimiento timestamp [default: `CURRENT_TIMESTAMP`]
+    observacion text
+}
+
+Table Compras {
+    id int [pk, increment]
+    proveedor_id int [ref: > Proveedores.id]
+
+    fecha_compra date [not null]
+    total decimal(10, 2) [not null]
+    estado varchar(50) [not null] // 'pendiente', 'completada', 'cancelada'
+    observacion text    
+}
+
+Table Detalles_Compra {
+    id int [pk, increment]
+    compra_id int [ref: > Compras.id]
+    producto_id int [ref: > Productos.id]
+    lote_id int [ref: > Lotes.id]
+
+    cantidad int [not null]
+    precio_unitario decimal(10, 2) [not null]
+    subtotal decimal(10, 2) [not null]
+}
