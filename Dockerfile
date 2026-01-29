@@ -1,6 +1,5 @@
 # 1. Usar imagen base de PHP con Apache
 FROM php:8.2-apache
-
 # 2. Instalar dependencias del sistema necesarias para Laravel y Node
 RUN apt-get update && apt-get install -y \
     zip \
@@ -9,9 +8,10 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     libonig-dev \
     curl \
-    && docker-php-ext-install pdo_mysql zip mbstring \
+    libpq-dev \
+    && docker-php-ext-install pdo_pgsql mbstring zip \
     && a2enmod rewrite
-
+    
 # 3. Instalar Node.js y NPM (Necesario para tu 'npm run build')
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs
