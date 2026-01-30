@@ -138,3 +138,14 @@ Route::get('/admin/sistema', [App\Http\Controllers\SistemaController::class, 'in
 Route::post('/admin/sistema/respaldo', [App\Http\Controllers\SistemaController::class, 'respaldar'])
     ->name('sistema.respaldar')
     ->middleware('auth');
+
+    // --- RUTA TEMPORAL PARA CORRER SEEDERS ---
+Route::get('/instalar-admin', function () {
+    // 1. Ejecuta las migraciones por si acaso
+    Artisan::call('migrate', ['--force' => true]);
+    
+    // 2. Ejecuta los seeders (Aquí se crea tu usuario admin)
+    Artisan::call('db:seed', ['--force' => true]);
+    
+    return '¡Éxito! Tablas migradas y Seeders ejecutados. Ya puedes iniciar sesión con tu admin.';
+});
