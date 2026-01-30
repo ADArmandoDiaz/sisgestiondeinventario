@@ -1,8 +1,7 @@
 # 1. Usar imagen base de PHP con Apache
 FROM php:8.2-apache
 
-# 2. Instalar dependencias, drivers y limpiar caché (OPTIMIZADO)
-# Agrupamos todo en un solo RUN para reducir capas y tamaño
+# 2. Instalar dependencias, drivers y limpiar caché
 RUN apt-get update && apt-get install -y \
     zip \
     unzip \
@@ -17,7 +16,6 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # 3. Instalar Node.js y NPM
-# Limpiamos caché aquí también
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
     && apt-get clean \
@@ -32,13 +30,13 @@ WORKDIR /var/www/html
 # 6. Copiar los archivos de tu proyecto
 COPY . .
 
-
-# 7. Instalar dependencias y compilar assets
+# 7. Instalar dependencias y compilar assets (CORREGIDO)
+# Todo en un solo RUN para evitar errores de sintaxis y capas extra
 RUN composer install --no-dev --optimize-autoloader \
     && npm install \
     && npm run build \
+    && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-    RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 # 8. Configurar Apache para apuntar a /public
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
@@ -48,5 +46,4 @@ RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 EXPOSE 80
 
 # 10. Comando de inicio
-# ADVERTENCIA: Si la DB falla, el contenedor se detendrá.
 CMD php artisan migrate --force && apache2-foreground
