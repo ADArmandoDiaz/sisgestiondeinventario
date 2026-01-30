@@ -9,23 +9,21 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class ProductoFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
-        // SOLUCIÓN DEFINITIVA: Instanciamos Faker manualmente
-        // Esto evita el error de "null" y el error de "undefined function"
+        // Instancia manual (esto funciona perfecto)
         $faker = \Faker\Factory::create();
 
         return [
             'categoria_id' => \App\Models\Categoria::query()->inRandomOrder()->value('id') ?? 1,
             
-            // Usamos la variable $faker que acabamos de crear arriba
             'codigo' => $faker->unique()->numerify('#####'),
-            'nombre' => $faker->unique()->words(2, true),
+            
+            // SOLUCIÓN AQUÍ: Agregamos 4 números al azar al final del nombre
+            // Ejemplo: "Mesa Azul 4829"
+            // Esto evita que se repitan los nombres.
+            'nombre' => $faker->words(2, true) . ' ' . $faker->numerify('####'), 
+
             'description' => $faker->sentence(),
             'imagen' => $faker->imageUrl(640, 480, 'products'),
             'precio_compra' => $faker->randomFloat(2, 10, 100),
