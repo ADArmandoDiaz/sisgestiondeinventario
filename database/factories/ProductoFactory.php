@@ -16,21 +16,24 @@ class ProductoFactory extends Factory
      */
     public function definition(): array
     {
-        return [
-            // Busca un ID de categoría existente al azar
-            'categoria_id' => \App\Models\Categoria::query()->inRandomOrder()->value('id') ?? 1, 
+        // SOLUCIÓN DEFINITIVA: Instanciamos Faker manualmente
+        // Esto evita el error de "null" y el error de "undefined function"
+        $faker = \Faker\Factory::create();
 
-            // CAMBIO CLAVE: Usamos fake() en lugar de $this->faker
-            'codigo' => fake()->unique()->numerify('#####'),
-            'nombre' => fake()->unique()->words(2, true),
-            'description' => fake()->sentence(),
-            'imagen' => fake()->imageUrl(640, 480, 'products'),
-            'precio_compra' => fake()->randomFloat(2, 10, 100),
-            'precio_venta' => fake()->randomFloat(2, 15, 200),
-            'stock_minimo' => fake()->numberBetween(1, 10),
-            'stock_maximo' => fake()->numberBetween(11, 100),
-            'unidad_medida' => fake()->randomElement(['kg', 'lt', 'm', 'unidad']),
-            'estado' => fake()->boolean(80),
+        return [
+            'categoria_id' => \App\Models\Categoria::query()->inRandomOrder()->value('id') ?? 1,
+            
+            // Usamos la variable $faker que acabamos de crear arriba
+            'codigo' => $faker->unique()->numerify('#####'),
+            'nombre' => $faker->unique()->words(2, true),
+            'description' => $faker->sentence(),
+            'imagen' => $faker->imageUrl(640, 480, 'products'),
+            'precio_compra' => $faker->randomFloat(2, 10, 100),
+            'precio_venta' => $faker->randomFloat(2, 15, 200),
+            'stock_minimo' => $faker->numberBetween(1, 10),
+            'stock_maximo' => $faker->numberBetween(11, 100),
+            'unidad_medida' => $faker->randomElement(['kg', 'lt', 'm', 'unidad']),
+            'estado' => $faker->boolean(80),
         ];
     }
 }
