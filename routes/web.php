@@ -140,13 +140,13 @@ Route::post('/admin/sistema/respaldo', [App\Http\Controllers\SistemaController::
     ->name('sistema.respaldar')
     ->middleware('auth');
 
-    // --- RUTA TEMPORAL PARA CORRER SEEDERS ---
 Route::get('/instalar-admin', function () {
-    // 1. Ejecuta las migraciones por si acaso
-    Artisan::call('migrate', ['--force' => true]);
+    // CAMBIO IMPORTANTE: 'migrate:fresh' borra todo y empieza de cero.
+    // Esto evita el error de "datos duplicados".
+    Artisan::call('migrate:fresh', [
+        '--force' => true,
+        '--seed' => true // Esto ejecuta los seeders automáticamente después de borrar
+    ]);
     
-    // 2. Ejecuta los seeders (Aquí se crea tu usuario admin)
-    Artisan::call('db:seed', ['--force' => true]);
-    
-    return '¡Éxito! Tablas migradas y Seeders ejecutados. Ya puedes iniciar sesión con tu admin.';
+    return '¡Éxito Total! Base de datos reiniciada y Admin creado. Ya puedes borrar esta ruta y entrar al login.';
 });
